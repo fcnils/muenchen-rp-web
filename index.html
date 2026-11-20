@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>München RP — Portal</title>
+  <style>
+    :root {
+      --bg-main: #090c16;
+      --bg-card: #101526;
+      --bg-card-2: #161d33;
+      --bg-input: #0b0f1c;
+      --border: rgba(130, 155, 255, 0.2);
+      --border-strong: rgba(0, 229, 255, 0.42);
+      --text: #f3f6ff;
+      --muted: #9aa6c9;
+      --neon-cyan: #00e5ff;
+      --neon-purple: #a855f7;
+      --danger: #ef4444;
+      --radius: 14px;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(168, 85, 247, 0.08), transparent 48%),
+        radial-gradient(circle at 82% 16%, rgba(0, 229, 255, 0.07), transparent 46%),
+        var(--bg-main);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    #customBgLayer {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    body.has-custom-bg #customBgLayer {
+      opacity: 1;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 12, 22, 0.45);
+      pointer-events: none;
+      z-index: 0;
+      display: none;
+    }
+
+    body.has-custom-bg .bg-overlay {
+      display: block;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 18px 18px 56px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(16, 21, 38, 0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--neon-cyan);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      background: linear-gradient(90deg, #ffffff, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg-card-2);
+      color: var(--text);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--neon-cyan);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(168, 85, 247, 0.22));
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+    }
+
+    .tab-panel {
+      display: none;
+      margin-top: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(16, 21, 38, 0.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    h1 { font-size: 1.55rem; font-weight: 800; }
+    h2 { font-size: 1.2rem; font-weight: 700; }
+    h3 { font-size: 1.02rem; font-weight: 700; }
+    .muted { color: var(--muted); font-size: 0.92rem; }
+
+    .home-hero {
+      display: grid;
+      grid-template-columns: minmax(220px, 300px) 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    @media (max-width: 780px) {
+      .home-hero { grid-template-columns: 1fr; }
+    }
+
+    .home-pb-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .home-pb-frame {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-card-2);
+      aspect-ratio: 1 / 1;
+    }
+
+    .home-pb-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .home-banner {
+      position: relative;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-strong);
+      background:
+        linear-gradient(125deg, rgba(0, 229, 255, 0.1), rgba(168, 85, 247, 0.12)),
+        var(--bg-card-2);
+      overflow: hidden;
+      min-height: 170px;
+      display: flex;
+      align-items: center;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .home-banner.has-banner-img {
+      background-size: cover;
+      background-position: center;
+    }
+
+    .home-banner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(9, 12, 22, 0.88) 0%, rgba(9, 12, 22, 0.65) 60%, rgba(9, 12, 22, 0.45) 100%);
+      pointer-events: none;
+    }
+
+    .home-banner-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .home-banner-title {
+      font-size: 1.38rem;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .home-banner-sub {
+      color: #d6deff;
+      margin-top: 6px;
+      font-size: 0.96rem;
+      white-space: pre-wrap;
+    }
+
+    .dc-desc-box {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      white-space: pre-line;
+      font-size: 0.96rem;
+      color: #eef2ff;
+      line-height: 1.65;
+    }
+
+    .admin-info-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .admin-info-list li {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+    }
+
+    .log-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .log-item {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .log-time {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.18), rgba(168, 85, 247, 0.22));
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.16s ease;
+    }
+
+    .btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00b8d4, #8b5cf6);
+      border: none;
+      color: #ffffff;
+    }
+
+    .btn-ghost {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 0.82rem;
+      border-radius: 8px;
+    }
+
+    .raster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .raster-card {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .raster-img-wrap {
+      width: 100%;
+      height: 165px;
+      background: #080b16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .raster-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .raster-placeholder {
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .raster-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .upload-box {
+      background: rgba(11, 15, 28, 0.72);
+      border: 1px dashed var(--border-strong);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    label {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: #d6deff;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+
+    input[type="file"] {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .emoji-picker-popup {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #0b1020;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 10px;
+      padding: 8px;
+      max-height: 170px;
+      overflow-y: auto;
+      z-index: 250;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.7);
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 6px;
+    }
+
+    .emoji-picker-popup.open {
+      display: grid;
+    }
+
+    .emoji-choice {
+      background: var(--bg-card-2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: var(--text);
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .emoji-choice:hover {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 229, 255, 0.14);
+    }
+
+    .emoji-choice span.em {
+      font-size: 1.05rem;
+      flex-shrink: 0;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .role-box {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .member-list {
+      list-style: none;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(11, 15, 28, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .rule-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .rule-view {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      white-space: pre-wrap;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: rgba(0, 229, 255, 0.14);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+    }
+
+    .status-msg {
+      font-size: 0.86rem;
+      margin-top: 8px;
+      color: #86efac;
+      min-height: 20px;
+    }
+
+    .status-err {
+      color: #fca5a5;
+    }
+  </style>
+</head>
+<body>
+  <div id="customBgLayer"></div>
+  <div class="bg-overlay"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img id="headerAvatar" class="brand-avatar" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwOTA3MWUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1NSUiIHN0b3AtY29sb3I9IiMyYzEwNTkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDcxMjI2Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJuZW9uIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMGU1ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzA4NGZjIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjgwMCIgZmlsbD0idXJsKCNza3kpIi8+CiAgPHJlY3QgeD0iNjUwIiB5PSIxMzAiIHdpZHRoPSIxNCIgaGVpZ2h0PSI0NDAiIGZpbGw9IiM2NDc0OGIiLz4KICA8cG9seWdvbiBwb2ludHM9IjY1Nyw5NSA2NDIsMTUwIDY3MiwxNTAiIGZpbGw9IiM5NGEzYjgiLz4KICA8Y2lyY2xlIGN4PSI2NTciIGN5PSIyMTAiIHI9IjI0IiBmaWxsPSIjMWUyOTNiIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMjUwIiB3aWR0aD0iMjgiIGhlaWdodD0iMjYwIiBmaWxsPSIjM2IyZjRhIi8+CiAgPHJlY3QgeD0iMzM1IiB5PSIyNTAiIHdpZHRoPSIyOCIgaGVpZ2h0PSIyNjAiIGZpbGw9IiMzYjJmNGEiLz4KICA8cGF0aCBkPSJNMjcyIDI1MCBRMjg5IDIxNSAzMDYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cGF0aCBkPSJNMzMyIDI1MCBRMzQ5IDIxNSAzNjYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cmVjdCB4PSIzODAiIHk9IjMyMCIgd2lkdGg9IjIxMCIgaGVpZ2h0PSIyMTAiIGZpbGw9IiMxYjE4MzQiIHN0cm9rZT0iIzdjM2FlZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlnb24gcG9pbnRzPSIwLDU2MCA4MDAsNTYwIDgwMCw4MDAgMCw4MDAiIGZpbGw9IiMwZDEwMjIiLz4KICA8cmVjdCB4PSIxMTUiIHk9IjMzNSIgd2lkdGg9IjU3MCIgaGVpZ2h0PSIxNzAiIHJ4PSIyMiIgZmlsbD0iIzA5MGMxYyIgc3Ryb2tlPSJ1cmwoI25lb24pIiBzdHJva2Utd2lkdGg9IjYiLz4KICA8dGV4dCB4PSI0MDAiIHk9IjQ1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBJbXBhY3QsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEyIiBmaWxsPSJ1cmwoI25lb24pIiBsZXR0ZXItc3BhY2luZz0iOCI+TVJQPC90ZXh0Pgo8L3N2Zz4=" alt="München RP Profilbild" />
+        <div>
+          <div class="brand-title">München RP</div>
+          <div class="brand-sub" id="syncStatusSub">Community-Portal · Lokal</div>
+        </div>
+      </div>
+
+      <nav class="tab-bar" id="tabBar" aria-label="Hauptnavigation">
+        <button type="button" class="tab-btn active" data-tab="home">🏠 Home</button>
+        <button type="button" class="tab-btn" data-tab="hintergrundbild">🌄 Hintergrundbild</button>
+        <button type="button" class="tab-btn" data-tab="bauwerke">🏗️ Bauwerke</button>
+        <button type="button" class="tab-btn" data-tab="fraktion">🚓 Fraktion</button>
+        <button type="button" class="tab-btn" data-tab="regelwerke">📜 Regelwerke</button>
+        <button type="button" class="tab-btn" data-tab="teamliste">👥 Teamliste</button>
+        <button type="button" class="tab-btn" data-tab="support">🎧 Support</button>
+        <button type="button" class="tab-btn" data-tab="admin">🛡️ Admin</button>
+      </nav>
+    </header>
+
+    <!-- HOME TAB -->
+    <section id="tab-home" class="tab-panel active">
+      <div class="card">
+        <div class="home-hero">
+          <div class="home-pb-column">
+            <div class="home-pb-frame">
+              <img id="homeAvatar" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwOTA3MWUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1NSUiIHN0b3AtY29sb3I9IiMyYzEwNTkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDcxMjI2Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJuZW9uIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMGU1ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzA4NGZjIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjgwMCIgZmlsbD0idXJsKCNza3kpIi8+CiAgPHJlY3QgeD0iNjUwIiB5PSIxMzAiIHdpZHRoPSIxNCIgaGVpZ2h0PSI0NDAiIGZpbGw9IiM2NDc0OGIiLz4KICA8cG9seWdvbiBwb2ludHM9IjY1Nyw5NSA2NDIsMTUwIDY3MiwxNTAiIGZpbGw9IiM5NGEzYjgiLz4KICA8Y2lyY2xlIGN4PSI2NTciIGN5PSIyMTAiIHI9IjI0IiBmaWxsPSIjMWUyOTNiIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMjUwIiB3aWR0aD0iMjgiIGhlaWdodD0iMjYwIiBmaWxsPSIjM2IyZjRhIi8+CiAgPHJlY3QgeD0iMzM1IiB5PSIyNTAiIHdpZHRoPSIyOCIgaGVpZ2h0PSIyNjAiIGZpbGw9IiMzYjJmNGEiLz4KICA8cGF0aCBkPSJNMjcyIDI1MCBRMjg5IDIxNSAzMDYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cGF0aCBkPSJNMzMyIDI1MCBRMzQ5IDIxNSAzNjYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cmVjdCB4PSIzODAiIHk9IjMyMCIgd2lkdGg9IjIxMCIgaGVpZ2h0PSIyMTAiIGZpbGw9IiMxYjE4MzQiIHN0cm9rZT0iIzdjM2FlZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlnb24gcG9pbnRzPSIwLDU2MCA4MDAsNTYwIDgwMCw4MDAgMCw4MDAiIGZpbGw9IiMwZDEwMjIiLz4KICA8cmVjdCB4PSIxMTUiIHk9IjMzNSIgd2lkdGg9IjU3MCIgaGVpZ2h0PSIxNzAiIHJ4PSIyMiIgZmlsbD0iIzA5MGMxYyIgc3Ryb2tlPSJ1cmwoI25lb24pIiBzdHJva2Utd2lkdGg9IjYiLz4KICA8dGV4dCB4PSI0MDAiIHk9IjQ1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBJbXBhY3QsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEyIiBmaWxsPSJ1cmwoI25lb24pIiBsZXR0ZXItc3BhY2luZz0iOCI+TVJQPC90ZXh0Pgo8L3N2Zz4=" alt="München RP Hauptbild" />
+            </div>
+            <button type="button" id="homePbChangeBtn" class="btn btn-sm btn-ghost" style="display:none;" onclick="handleDirectPbButton()">
+              🖼️ Profilbild ändern
+            </button>
+            <input type="file" id="directPbFileInput" accept="image/*" style="display:none;" onchange="handlePbFileUpload(event)" />
+          </div>
+          <div>
+            <span class="badge">OFFIZIELLES PORTAL</span>
+            <h1 style="margin-top:8px;">Willkommen bei München RP</h1>
+            <p class="muted" style="margin-top:8px;">
+              Erlebe ein atmosphärisches Roleplay in München mit klaren Strukturen,
+              spannenden Bauwerken und einem aktiven Community-Team.
+            </p>
+            <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px;">
+              <a class="btn btn-primary" href="https://discord.gg/YucC3GdXqB" target="_blank" rel="noopener noreferrer">
+                💬 Zum Hauptserver (Discord)
+              </a>
+              <button type="button" class="btn btn-ghost" onclick="switchTab('regelwerke')">
+                📜 Regelwerke ansehen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manuelles Banner auf Home -->
+      <div class="card">
+        <div id="homeBannerBox" class="home-banner">
+          <div class="home-banner-content">
+            <span class="badge" id="homeBannerBadge">STADT-BANNER</span>
+            <div class="home-banner-title" id="homeBannerTitle">München RP — Saison &amp; Neuigkeiten</div>
+            <div class="home-banner-sub" id="homeBannerText">Aktuelle Ankündigungen, Events und Infos findest du hier oder direkt auf unserem Discord-Server.</div>
+            <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <a id="homeBannerBtn" class="btn btn-primary btn-sm" href="https://discord.gg/YucC3GdXqB" target="_blank" rel="noopener noreferrer">
+                Zum Hauptserver
+              </a>
+              <button type="button" id="homeBannerEditBtn" class="btn btn-ghost btn-sm" style="display:none;" onclick="toggleHomeBannerEditor()">
+                ✏️ Banner bearbeiten
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="homeBannerQuickEditor" class="upload-box" style="display:none;">
+          <h3 style="margin-bottom:10px;">✏️ Banner ändern</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="quickBannerBadge">Badge</label>
+              <input type="text" id="quickBannerBadge" placeholder="z. B. STADT-BANNER" />
+            </div>
+            <div class="field">
+              <label for="quickBannerTitle">Titel</label>
+              <input type="text" id="quickBannerTitle" placeholder="Banner-Titel" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="quickBannerText">Text</label>
+            <textarea id="quickBannerText" placeholder="Banner-Text..."></textarea>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="quickBannerBtnText">Button-Text</label>
+              <input type="text" id="quickBannerBtnText" placeholder="z. B. Zum Hauptserver" />
+            </div>
+            <div class="field">
+              <label for="quickBannerBtnUrl">Button-Link (URL oder #tab)</label>
+              <input type="text" id="quickBannerBtnUrl" placeholder="https://discord.gg/... oder #bauwerke" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="quickBannerFile">Banner-Bild hochladen</label>
+              <input type="file" id="quickBannerFile" accept="image/*" onchange="handleBannerFileUpload(event)" />
+            </div>
+            <div class="field">
+              <label for="quickBannerImgUrl">Oder Banner-Bild-URL</label>
+              <input type="text" id="quickBannerImgUrl" placeholder="https://..." />
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveBanner()">💾 Speichern</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="resetBanner()">Standard</button>
+          </div>
+          <div id="bannerStatusMsg" class="status-msg"></div>
+        </div>
+      </div>
+
+      <!-- Discord-Serverbeschreibung -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>💬 Discord-Beschreibung</h2>
+            <p class="muted">Direkt für euren Discord-Server vorbereitet.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="copyDiscordDescription(this)">
+            📋 Kopieren
+          </button>
+        </div>
+        <div id="discordDescriptionText" class="dc-desc-box">🚔 **München Roleplay**
+Willkommen auf unserem Server! 🇩🇪
+
+Du hast Lust auf gutes und realistisches Roleplay in München? Dann bist du bei uns genau richtig.
+
+🚨 **Das erwartet dich bei uns:**
+🚓 München Roleplay
+👮 Ein aktives und hilfsbereites Team
+🎙️ Voice-Pflicht
+🎭 Gutes und realistisches RP
+🤝 Eine starke &amp; faire Community</div>
+      </div>
+    </section>
+
+    <!-- HINTERGRUNDBILD TAB -->
+    <section id="tab-hintergrundbild" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>🌄 Hintergrundbilder</h2>
+            <p class="muted">Bilder mit Name und Beschreibung zum Herunterladen (verändert nicht den Seitenhintergrund).</p>
+          </div>
+          <span class="badge" id="bgCountBadge">0 Bilder</span>
+        </div>
+
+        <div id="bgAdminUploadBox" class="upload-box" style="display:none;">
+          <div class="form-grid">
+            <div class="field" style="margin-bottom:0;">
+              <label for="homeBgTitleInput">Name des Bildes</label>
+              <input type="text" id="homeBgTitleInput" placeholder="z. B. Marienplatz Wallpaper" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="homeBgFileInput">Bilddatei hochladen</label>
+              <input type="file" id="homeBgFileInput" accept="image/*" onchange="handleHomeBgFileSelected(event)" />
+            </div>
+          </div>
+          <div class="field" style="margin-top:10px; margin-bottom:10px;">
+            <label for="homeBgDescInput">Beschreibung</label>
+            <textarea id="homeBgDescInput" placeholder="Beschreibung zum Bild eintragen..."></textarea>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addBackgroundItem()">➕ Bild hochladen</button>
+          <div id="homeBgStatusMsg" class="status-msg"></div>
+        </div>
+
+        <div id="bgRasterGrid" class="raster-grid"></div>
+      </div>
+    </section>
+
+    <!-- BAUWERKE TAB -->
+    <section id="tab-bauwerke" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>🏗️ Bauwerke</h2>
+            <p class="muted">Bauwerke der Stadt München RP.</p>
+          </div>
+          <span class="badge" id="bauwerkeCountBadge">0 Bauwerke</span>
+        </div>
+
+        <div id="bauwerkAdminUploadBox" class="upload-box" style="display:none;">
+          <div class="form-grid">
+            <div class="field" style="margin-bottom:0;">
+              <label for="bauwerkTitleInput">Bauwerk-Name</label>
+              <input type="text" id="bauwerkTitleInput" placeholder="z. B. Rathaus München" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label for="bauwerkFileInput">Bild hochladen</label>
+              <input type="file" id="bauwerkFileInput" accept="image/*" />
+            </div>
+          </div>
+          <div class="field" style="margin-top:10px; margin-bottom:10px;">
+            <label for="bauwerkDescInput">Beschreibung</label>
+            <textarea id="bauwerkDescInput" placeholder="Beschreibung eintragen..."></textarea>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addBauwerk()">➕ Bauwerk hinzufügen</button>
+          <div id="bauwerkStatusMsg" class="status-msg"></div>
+        </div>
+
+        <div id="bauwerkeGrid" class="raster-grid"></div>
+      </div>
+    </section>
+
+    <!-- FRAKTION TAB -->
+    <section id="tab-fraktion" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>🚓 Pflicht-Fraktionen auf München RP</h2>
+            <p class="muted">Polizei München sowie Feuerwehr, Rettungsdienst, Notarzt und Einsatzleitung sind Pflicht-Fraktionen mit Dienstnummer-Pflicht.</p>
+          </div>
+        </div>
+        <div class="roles-grid">
+          <div class="role-box">
+            <h3>🚓 Polizei München</h3>
+            <p class="muted" style="margin:6px 0 12px;">Pflicht-Fraktion · Dienstnummer-Pflicht · Streifendienst, Kripo, SEK &amp; Verkehr.</p>
+            <a class="btn btn-sm" href="https://discord.gg/znP54d7ksv" target="_blank" rel="noopener noreferrer">
+              Polizei-Discord öffnen
+            </a>
+          </div>
+          <div class="role-box">
+            <h3>🚒 Feuerwehr, Rettungsdienst, Notarzt &amp; Einsatzleitung</h3>
+            <p class="muted" style="margin:6px 0 12px;">Pflicht-Fraktion · Dienstnummer-Pflicht · Brandschutz, RD, NA &amp; ELW.</p>
+            <a class="btn btn-sm" href="https://discord.gg/nDHcR5NeP2" target="_blank" rel="noopener noreferrer">
+              Feuerwehr-Discord öffnen
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGELWERKE TAB -->
+    <section id="tab-regelwerke" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>📜 Regelwerke</h2>
+            <p class="muted">Wähle einen Regel-Button aus oder kopiere den Text für Discord.</p>
+          </div>
+          <button type="button" class="btn btn-sm btn-ghost" onclick="copyCurrentRule()">📋 Regeltext kopieren</button>
+        </div>
+
+        <div id="ruleButtonsContainer" class="rule-buttons"></div>
+        <div id="ruleDisplayBox" class="rule-view"></div>
+
+        <div id="ruleAdminEditor" style="display:none; border-top:1px solid var(--border); padding-top:16px; margin-top:8px;">
+          <h3 style="margin-bottom:10px;">🛠️ Regel-Button erstellen / bearbeiten</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="ruleTitleInput">Titel</label>
+              <input type="text" id="ruleTitleInput" placeholder="z. B. Stadtregeln" />
+            </div>
+            <div class="field">
+              <label for="ruleEmojiInput">Emoji (z. B. 📜 oder krone)</label>
+              <input type="text" id="ruleEmojiInput" placeholder="Emoji oder Suchwort" autocomplete="off" />
+              <div id="emojiPopup_ruleEmojiInput" class="emoji-picker-popup"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="ruleBodyInput">Regeltext</label>
+            <textarea id="ruleBodyInput" placeholder="Regeln hier eintragen..."></textarea>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveNewRule()">➕ Neu anlegen</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="updateSelectedRule()">💾 Speichern</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteSelectedRule()">🗑️ Löschen</button>
+          </div>
+          <div id="ruleStatusMsg" class="status-msg"></div>
+        </div>
+
+        <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+          <span class="muted">Offizielles Regelwerk auch auf Discord:</span>
+          <a class="btn btn-sm" href="https://discord.gg/Z4zxzJr4Y5" target="_blank" rel="noopener noreferrer">
+            📜 Zum Discord-Regelwerk
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAMLISTE TAB -->
+    <section id="tab-teamliste" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>👥 Teamliste</h2>
+            <p class="muted">Rollen anlegen und Personen verwalten.</p>
+          </div>
+          <span class="badge" id="teamRoleCount">0 Rollen</span>
+        </div>
+
+        <div id="teamLockedBox" class="raster-placeholder" style="background:var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:24px;">
+          🔒 Nur für eingeloggte Admins sichtbar.
+        </div>
+
+        <div id="teamAdminContent" style="display:none;">
+          <div class="form-grid">
+            <div class="field">
+              <label for="newRoleName">Rollen-Name</label>
+              <input type="text" id="newRoleName" placeholder="z. B. Projektleitung" />
+            </div>
+            <div class="field">
+              <label for="newRoleEmoji">Emoji (optional)</label>
+              <input type="text" id="newRoleEmoji" placeholder="z. B. krone oder 👑" autocomplete="off" />
+              <div id="emojiPopup_newRoleEmoji" class="emoji-picker-popup"></div>
+            </div>
+            <div class="field">
+              <label for="newRoleMembers">Personen (mit Komma trennen)</label>
+              <input type="text" id="newRoleMembers" placeholder="z. B. Max, Leon" />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="addTeamRole()">➕ Rolle hinzufügen</button>
+          <div id="teamStatusMsg" class="status-msg"></div>
+
+          <div id="teamRolesContainer" class="roles-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPPORT TAB -->
+    <section id="tab-support" class="tab-panel">
+      <div class="card">
+        <h2>🎧 Support-Warteraum</h2>
+        <p class="muted" style="margin:8px 0 16px;">
+          Du brauchst Hilfe oder möchtest mit dem Team sprechen? Tritt direkt dem Support-Warteraum auf Discord bei.
+        </p>
+        <a class="btn btn-primary" href="https://discord.gg/KeXHzMD47w" target="_blank" rel="noopener noreferrer">
+          🎧 Support-Warteraum betreten
+        </a>
+      </div>
+    </section>
+
+    <!-- ADMIN TAB -->
+    <section id="tab-admin" class="tab-panel">
+      <div class="card" id="adminPinStep">
+        <h2>🛡️ Admin-Login</h2>
+        <p class="muted" style="margin:6px 0 14px;">Schritt 1: Bitte gib den Admin-PIN ein.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; max-width:420px;">
+          <input type="password" id="adminPinInput" placeholder="Admin-PIN eingeben" autocomplete="current-password" />
+          <button type="button" class="btn btn-primary" onclick="verifyAdminPin()">Weiter</button>
+        </div>
+        <div id="adminLoginMsg" class="status-msg status-err"></div>
+      </div>
+
+      <div class="card" id="adminNameStep" style="display:none;">
+        <h2>🪪 Richtiger Name Pflicht</h2>
+        <p class="muted" style="margin:6px 0 14px;">Schritt 2: PIN richtig. <strong>Richtiger Name Pflicht</strong> – bitte gib deinen richtigen Namen ein.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; max-width:420px;">
+          <input type="text" id="adminNameInput" placeholder="Richtiger Name Pflicht..." />
+          <button type="button" class="btn btn-primary" onclick="completeAdminLogin()">Einloggen</button>
+        </div>
+        <div id="adminNameMsg" class="status-msg status-err"></div>
+      </div>
+
+      <div id="adminDashboard" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>🛡️ Admin-Bereich</h2>
+              <p class="muted" id="loggedInAdminLabel">Eingeloggt als Admin.</p>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="logoutAdmin()">Ausloggen</button>
+          </div>
+
+          <h3>🎨 Webseiten-Hintergrund ändern</h3>
+          <p class="muted" style="margin:4px 0 10px;">Änderungen werden zentral gespeichert und bleiben für alle sichtbar, bis du sie löschst.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+            <input type="file" id="siteBgFileInput" accept="image/*" onchange="handleSiteBgUpload(event)" />
+            <button type="button" class="btn btn-ghost btn-sm" onclick="clearCustomBackground()">Standard-BG wiederherstellen</button>
+          </div>
+          <div id="siteBgStatusMsg" class="status-msg"></div>
+
+          <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
+            <h3>Was du als Admin machen kannst:</h3>
+            <ul class="admin-info-list">
+              <li>🖼️ <strong>Profilbild:</strong> Auf <strong>Home</strong> über „Profilbild ändern“ ein Bild hochladen.</li>
+              <li>📢 <strong>Banner:</strong> Auf <strong>Home</strong> über „Banner bearbeiten“ Titel, Text, Button und Bild ändern.</li>
+              <li>🎨 <strong>Webseiten-Hintergrund:</strong> Hier oben den Hintergrund der Webseite setzen oder zurücksetzen.</li>
+              <li>🌄 <strong>Hintergrundbilder-Tab:</strong> Normale Bilder mit Name und Beschreibung zum Download für Besucher hochladen.</li>
+              <li>🏗️ <strong>Bauwerke:</strong> Im Tab <strong>Bauwerke</strong> Bauwerke einstellen oder löschen.</li>
+              <li>📜 <strong>Regelwerke:</strong> Im Tab <strong>Regelwerke</strong> Regel-Buttons erstellen, bearbeiten oder löschen.</li>
+              <li>👥 <strong>Teamliste:</strong> Im Tab <strong>Teamliste</strong> Rollen anlegen und Personen verwalten.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>📋 Logs</h2>
+              <p class="muted">Admin-Logins und Seiten-/Serverzugriffe mit Zeitstempel.</p>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="clearLogs()">Logs leeren</button>
+          </div>
+          <ul id="adminLogsList" class="log-list"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://gobtoxwhvmwwngoqzrbd.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_mAq3jD_M3pbOdMh4H7VEcQ_lM7thkC_";
+    const PORTAL_ROW_ID = "muenchen_rp_main";
+
+    const DEFAULT_PB = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgODAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2t5IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwOTA3MWUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1NSUiIHN0b3AtY29sb3I9IiMyYzEwNTkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDcxMjI2Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJuZW9uIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMGU1ZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjYzA4NGZjIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjgwMCIgZmlsbD0idXJsKCNza3kpIi8+CiAgPHJlY3QgeD0iNjUwIiB5PSIxMzAiIHdpZHRoPSIxNCIgaGVpZ2h0PSI0NDAiIGZpbGw9IiM2NDc0OGIiLz4KICA8cG9seWdvbiBwb2ludHM9IjY1Nyw5NSA2NDIsMTUwIDY3MiwxNTAiIGZpbGw9IiM5NGEzYjgiLz4KICA8Y2lyY2xlIGN4PSI2NTciIGN5PSIyMTAiIHI9IjI0IiBmaWxsPSIjMWUyOTNiIiBzdHJva2U9IiMwMGU1ZmYiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjI3NSIgeT0iMjUwIiB3aWR0aD0iMjgiIGhlaWdodD0iMjYwIiBmaWxsPSIjM2IyZjRhIi8+CiAgPHJlY3QgeD0iMzM1IiB5PSIyNTAiIHdpZHRoPSIyOCIgaGVpZ2h0PSIyNjAiIGZpbGw9IiMzYjJmNGEiLz4KICA8cGF0aCBkPSJNMjcyIDI1MCBRMjg5IDIxNSAzMDYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cGF0aCBkPSJNMzMyIDI1MCBRMzQ5IDIxNSAzNjYgMjUwIFoiIGZpbGw9IiMxNGI4YTYiLz4KICA8cmVjdCB4PSIzODAiIHk9IjMyMCIgd2lkdGg9IjIxMCIgaGVpZ2h0PSIyMTAiIGZpbGw9IiMxYjE4MzQiIHN0cm9rZT0iIzdjM2FlZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlnb24gcG9pbnRzPSIwLDU2MCA4MDAsNTYwIDgwMCw4MDAgMCw4MDAiIGZpbGw9IiMwZDEwMjIiLz4KICA8cmVjdCB4PSIxMTUiIHk9IjMzNSIgd2lkdGg9IjU3MCIgaGVpZ2h0PSIxNzAiIHJ4PSIyMiIgZmlsbD0iIzA5MGMxYyIgc3Ryb2tlPSJ1cmwoI25lb24pIiBzdHJva2Utd2lkdGg9IjYiLz4KICA8dGV4dCB4PSI0MDAiIHk9IjQ1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBJbXBhY3QsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEyIiBmaWxsPSJ1cmwoI25lb24pIiBsZXR0ZXItc3BhY2luZz0iOCI+TVJQPC90ZXh0Pgo8L3N2Zz4=";
+    const ADMIN_PIN = "MRP1";
+
+    const DEFAULT_BANNER = {
+      badge: "STADT-BANNER",
+      title: "München RP — Saison & Neuigkeiten",
+      text: "Aktuelle Ankündigungen, Events und Infos findest du hier oder direkt auf unserem Discord-Server.",
+      btnText: "Zum Hauptserver",
+      btnUrl: "https://discord.gg/YucC3GdXqB",
+      image: ""
+    };
+
+    const STORAGE_KEYS = {
+      adminAuth: "mrp_v18_admin_auth",
+      adminUser: "mrp_v18_admin_user",
+      localSnapshot: "mrp_v18_portal_snapshot"
+    };
+
+    const DISCORD_EMOJIS = [
+      { e: "👑", k: "krone koenig monarch leitung chef admin boss" },
+      { e: "🚓", k: "polizei streife wagen auto blaulicht" },
+      { e: "👮", k: "polizei beamter uniform gesetz" },
+      { e: "🚨", k: "blaulicht sirene alarm notruf einsatz" },
+      { e: "🚒", k: "feuerwehr loeschzug brand auto" },
+      { e: "🚑", k: "rettungsdienst krankenwagen sanitater" },
+      { e: "🩺", k: "notarzt arzt medizin gesundheit" },
+      { e: "🎖️", k: "einsatzleitung orden leitung rang" },
+      { e: "🛡️", k: "schild admin schutz sicherheit mod" },
+      { e: "📜", k: "regel rule buch dokument text" },
+      { e: "🎧", k: "support headset voice talk hilfe" },
+      { e: "👥", k: "team gruppe mitglieder leute personal" },
+      { e: "🏗️", k: "bauwerk gebaeude bauen stadt architektur" },
+      { e: "🏙️", k: "stadt muenchen skyline gebaeude" },
+      { e: "⭐", k: "stern favorit highlight" },
+      { e: "🔥", k: "feuer brand hot stark" }
+    ];
+
+    const DEFAULT_RULES = [
+      {
+        id: "r1",
+        emoji: "📜",
+        title: "Allgemeine Regeln",
+        body: "1. Respektvoller Umgang miteinander auf Discord und im Roleplay.\n2. Kein RDM, VDM oder Fail-RP.\n3. Anweisungen des Serverteams und der Einsatzkräfte sind Folge zu leisten."
+      },
+      {
+        id: "r2",
+        emoji: "🚓",
+        title: "Fraktions- & Dienstregeln",
+        body: "1. Polizei und Feuerwehr/Rettungsdienst sind Pflicht-Fraktionen.\n2. Jedes Fraktionsmitglied führt eine gültige Dienstnummer.\n3. Funk- und Einsatzdisziplin sind verbindlich."
+      }
+    ];
+
+    function hasSupabaseConfig() {
+      return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+    }
+
+    function setSyncLabel(text) {
+      const el = document.getElementById("syncStatusSub");
+      if (el) el.textContent = text;
+    }
+
+    function formatNow() {
+      return new Date().toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    let isAdmin = sessionStorage.getItem(STORAGE_KEYS.adminAuth) === "1";
+    let adminName = sessionStorage.getItem(STORAGE_KEYS.adminUser) || "";
+    let pinVerifiedWaitingName = false;
+
+    let portalState = {
+      pb: DEFAULT_PB,
+      siteBg: "",
+      banner: { ...DEFAULT_BANNER },
+      bauwerke: [],
+      bgList: [],
+      rules: DEFAULT_RULES.map((r) => ({ ...r })),
+      team: [],
+      logs: []
+    };
+
+    let pendingBannerImage = "";
+    let pendingBgImageData = "";
+    let pendingBgFileName = "";
+    let bannerEditorOpen = false;
+    let activeRuleId = portalState.rules[0] ? portalState.rules[0].id : null;
+
+    function loadLocalSnapshot() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.localSnapshot);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function saveLocalSnapshot(snap) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.localSnapshot, JSON.stringify(snap));
+        return true;
+      } catch (err) {
+        console.warn("Lokaler Speicher voll:", err);
+        return false;
+      }
+    }
+
+    async function fetchRemoteState() {
+      if (!hasSupabaseConfig()) return null;
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/portal_state?id=eq.${encodeURIComponent(PORTAL_ROW_ID)}&select=data`;
+        const headers = { apikey: SUPABASE_ANON_KEY };
+        if (SUPABASE_ANON_KEY.startsWith("eyJ")) {
+          headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
+        }
+        const res = await fetch(url, { headers });
+        if (!res.ok) return null;
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0 && rows[0].data) {
+          return rows[0].data;
+        }
+        return null;
+      } catch (err) {
+        console.warn("Supabase-Abruf fehlgeschlagen:", err);
+        return null;
+      }
+    }
+
+    async function pushRemoteState(snap) {
+      if (!hasSupabaseConfig()) return { ok: true, cloud: false };
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/portal_state?on_conflict=id`;
+        const headers = {
+          apikey: SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
+          Prefer: "resolution=merge-duplicates,return=minimal"
+        };
+        if (SUPABASE_ANON_KEY.startsWith("eyJ")) {
+          headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
+        }
+        const res = await fetch(url, {
+          method: "POST",
+          headers,
+          body: JSON.stringify([{
+            id: PORTAL_ROW_ID,
+            data: snap,
+            updated_at: new Date().toISOString()
+          }])
+        });
+        if (!res.ok) {
+          return { ok: false, cloud: true, error: `HTTP ${res.status}` };
+        }
+        return { ok: true, cloud: true };
+      } catch (err) {
+        return { ok: false, cloud: true, error: String(err) };
+      }
+    }
+
+    function applyLoadedData(raw) {
+      if (!raw || typeof raw !== "object") return;
+      portalState = {
+        pb: raw.pb || DEFAULT_PB,
+        siteBg: raw.siteBg || "",
+        banner: { ...DEFAULT_BANNER, ...(raw.banner || {}) },
+        bauwerke: Array.isArray(raw.bauwerke) ? raw.bauwerke : [],
+        bgList: Array.isArray(raw.bgList) ? raw.bgList : [],
+        rules: Array.isArray(raw.rules) && raw.rules.length ? raw.rules : DEFAULT_RULES.map((r) => ({ ...r })),
+        team: Array.isArray(raw.team) ? raw.team : [],
+        logs: Array.isArray(raw.logs) ? raw.logs : []
+      };
+      pendingBannerImage = portalState.banner.image || "";
+      if (!portalState.rules.some((r) => r.id === activeRuleId)) {
+        activeRuleId = portalState.rules[0] ? portalState.rules[0].id : null;
+      }
+    }
+
+    async function persistPortalState() {
+      saveLocalSnapshot(portalState);
+      if (!hasSupabaseConfig()) {
+        setSyncLabel("Community-Portal · Nur lokal");
+        return { ok: true, cloud: false };
+      }
+      setSyncLabel("Community-Portal · Speichert online...");
+      const result = await pushRemoteState(portalState);
+      if (result.ok) {
+        setSyncLabel("Community-Portal · Online synchronisiert");
+      } else {
+        setSyncLabel("Community-Portal · Online-Sync Fehler");
+      }
+      return result;
+    }
+
+    function addLog(message, shouldPersist = true) {
+      portalState.logs.unshift({
+        id: "log_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        message,
+        time: formatNow()
+      });
+      if (portalState.logs.length > 150) {
+        portalState.logs = portalState.logs.slice(0, 150);
+      }
+      if (shouldPersist) {
+        persistPortalState();
+      } else {
+        saveLocalSnapshot(portalState);
+      }
+      if (isAdmin) renderLogs();
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tabName);
+      });
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === "tab-" + tabName);
+      });
+      renderAll();
+    }
+
+    document.getElementById("tabBar").addEventListener("click", (e) => {
+      const btn = e.target.closest(".tab-btn");
+      if (btn && btn.dataset.tab) {
+        switchTab(btn.dataset.tab);
+      }
+    });
+
+    function copyDiscordDescription(btnEl) {
+      const box = document.getElementById("discordDescriptionText");
+      if (!box) return;
+      navigator.clipboard?.writeText(box.innerText).catch(() => {});
+      if (btnEl) {
+        const orig = btnEl.textContent;
+        btnEl.textContent = "✅ Kopiert!";
+        setTimeout(() => { btnEl.textContent = orig; }, 1600);
+      }
+    }
+
+    function syncBannerInputs() {
+      const bEl = document.getElementById("quickBannerBadge");
+      const tEl = document.getElementById("quickBannerTitle");
+      const xEl = document.getElementById("quickBannerText");
+      const btEl = document.getElementById("quickBannerBtnText");
+      const buEl = document.getElementById("quickBannerBtnUrl");
+      const iuEl = document.getElementById("quickBannerImgUrl");
+
+      if (bEl && document.activeElement !== bEl) bEl.value = portalState.banner.badge || "";
+      if (tEl && document.activeElement !== tEl) tEl.value = portalState.banner.title || "";
+      if (xEl && document.activeElement !== xEl) xEl.value = portalState.banner.text || "";
+      if (btEl && document.activeElement !== btEl) btEl.value = portalState.banner.btnText || "";
+      if (buEl && document.activeElement !== buEl) buEl.value = portalState.banner.btnUrl || "";
+      if (iuEl && document.activeElement !== iuEl) {
+        iuEl.value = portalState.banner.image && !portalState.banner.image.startsWith("data:") ? portalState.banner.image : "";
+      }
+    }
+
+    function toggleHomeBannerEditor() {
+      if (!isAdmin) return;
+      bannerEditorOpen = !bannerEditorOpen;
+      pendingBannerImage = portalState.banner.image || "";
+      syncBannerInputs();
+      renderHomeBanner();
+    }
+
+    function handleBannerFileUpload(event) {
+      if (!isAdmin) return;
+      const file = event.target.files && event.target.files[0];
+      const msg = document.getElementById("bannerStatusMsg");
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingBannerImage = reader.result;
+        if (msg) {
+          msg.className = "status-msg";
+          msg.textContent = "Bild geladen: " + file.name + " (auf Speichern klicken)";
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveBanner() {
+      if (!isAdmin) return;
+      const badge = document.getElementById("quickBannerBadge").value.trim();
+      const title = document.getElementById("quickBannerTitle").value.trim();
+      const text = document.getElementById("quickBannerText").value.trim();
+      const btnText = document.getElementById("quickBannerBtnText").value.trim();
+      const btnUrl = document.getElementById("quickBannerBtnUrl").value.trim();
+      const imgUrl = document.getElementById("quickBannerImgUrl").value.trim();
+      const msg = document.getElementById("bannerStatusMsg");
+
+      const finalImage = imgUrl || pendingBannerImage || "";
+
+      portalState.banner = {
+        badge: badge || "STADT-BANNER",
+        title: title || "München RP Banner",
+        text: text || "",
+        btnText: btnText,
+        btnUrl: btnUrl,
+        image: finalImage
+      };
+      pendingBannerImage = finalImage;
+      const res = await persistPortalState();
+      syncBannerInputs();
+      renderHomeBanner();
+
+      if (msg) {
+        if (res.ok) {
+          msg.className = "status-msg";
+          msg.textContent = res.cloud ? "Banner für alle gespeichert." : "Banner lokal gespeichert.";
+        } else {
+          msg.className = "status-msg status-err";
+          msg.textContent = "Online-Speichern fehlgeschlagen: " + (res.error || "Unbekannt");
+        }
+      }
+    }
+
+    async function resetBanner() {
+      if (!isAdmin) return;
+      portalState.banner = { ...DEFAULT_BANNER };
+      pendingBannerImage = "";
+      await persistPortalState();
+      syncBannerInputs();
+      renderHomeBanner();
+      const msg = document.getElementById("bannerStatusMsg");
+      if (msg) {
+        msg.className = "status-msg";
+        msg.textContent = "Standard wiederhergestellt.";
+      }
+    }
+
+    function handleBannerButtonClick(event, url) {
+      if (url && url.startsWith("#")) {
+        event.preventDefault();
+        const targetTab = url.slice(1).toLowerCase();
+        if (document.getElementById("tab-" + targetTab)) {
+          switchTab(targetTab);
+        }
+      }
+    }
+
+    function renderHomeBanner() {
+      const box = document.getElementById("homeBannerBox");
+      const badgeEl = document.getElementById("homeBannerBadge");
+      const titleEl = document.getElementById("homeBannerTitle");
+      const textEl = document.getElementById("homeBannerText");
+      const btnEl = document.getElementById("homeBannerBtn");
+      const editBtn = document.getElementById("homeBannerEditBtn");
+      const quickEditor = document.getElementById("homeBannerQuickEditor");
+
+      if (!box) return;
+
+      badgeEl.textContent = portalState.banner.badge || "BANNER";
+      titleEl.textContent = portalState.banner.title || "";
+      textEl.textContent = portalState.banner.text || "";
+      textEl.style.display = portalState.banner.text ? "block" : "none";
+
+      if (portalState.banner.btnText && portalState.banner.btnUrl) {
+        btnEl.textContent = portalState.banner.btnText;
+        btnEl.href = portalState.banner.btnUrl;
+        if (portalState.banner.btnUrl.startsWith("#")) {
+          btnEl.removeAttribute("target");
+          btnEl.removeAttribute("rel");
+          btnEl.onclick = (e) => handleBannerButtonClick(e, portalState.banner.btnUrl);
+        } else {
+          btnEl.setAttribute("target", "_blank");
+          btnEl.setAttribute("rel", "noopener noreferrer");
+          btnEl.onclick = null;
+        }
+        btnEl.style.display = "inline-flex";
+      } else {
+        btnEl.style.display = "none";
+      }
+
+      if (portalState.banner.image) {
+        box.style.backgroundImage = `url("${portalState.banner.image}")`;
+        box.classList.add("has-banner-img");
+      } else {
+        box.style.backgroundImage = "";
+        box.classList.remove("has-banner-img");
+      }
+
+      if (!isAdmin) bannerEditorOpen = false;
+      if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
+      if (quickEditor) quickEditor.style.display = (isAdmin && bannerEditorOpen) ? "block" : "none";
+      if (isAdmin) syncBannerInputs();
+    }
+
+    function applyPb(src) {
+      const finalSrc = src || DEFAULT_PB;
+      document.getElementById("headerAvatar").src = finalSrc;
+      document.getElementById("homeAvatar").src = finalSrc;
+    }
+
+    function handleDirectPbButton() {
+      if (!isAdmin) return;
+      const picker = document.getElementById("directPbFileInput");
+      if (picker) picker.click();
+    }
+
+    function handlePbFileUpload(event) {
+      if (!isAdmin) return;
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        portalState.pb = reader.result;
+        applyPb(portalState.pb);
+        await persistPortalState();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyActiveBackground() {
+      const customBg = portalState.siteBg || "";
+      const bgLayer = document.getElementById("customBgLayer");
+      if (customBg) {
+        if (bgLayer) bgLayer.style.backgroundImage = `url("${customBg}")`;
+        document.body.classList.add("has-custom-bg");
+      } else {
+        if (bgLayer) bgLayer.style.backgroundImage = "";
+        document.body.classList.remove("has-custom-bg");
+      }
+    }
+
+    function handleSiteBgUpload(event) {
+      if (!isAdmin) return;
+      const file = event.target.files && event.target.files[0];
+      const msg = document.getElementById("siteBgStatusMsg");
+      if (!file || !file.type.startsWith("image/")) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        portalState.siteBg = reader.result;
+        applyActiveBackground();
+        const res = await persistPortalState();
+        if (msg) {
+          if (res.ok) {
+            msg.className = "status-msg";
+            msg.textContent = res.cloud
+              ? "Hintergrund für alle gespeichert: " + file.name
+              : "Hintergrund lokal gespeichert: " + file.name;
+          } else {
+            msg.className = "status-msg status-err";
+            msg.textContent = "Online-Speichern fehlgeschlagen: " + (res.error || "Unbekannt");
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function clearCustomBackground() {
+      if (!isAdmin) return;
+      portalState.siteBg = "";
+      applyActiveBackground();
+      await persistPortalState();
+      const fileInput = document.getElementById("siteBgFileInput");
+      if (fileInput) fileInput.value = "";
+      const msg = document.getElementById("siteBgStatusMsg");
+      if (msg) {
+        msg.className = "status-msg";
+        msg.textContent = "Standard-Hintergrund wiederhergestellt.";
+      }
+    }
+
+    function handleHomeBgFileSelected(event) {
+      if (!isAdmin) return;
+      const file = event.target.files && event.target.files[0];
+      const msg = document.getElementById("homeBgStatusMsg");
+      if (!file || !file.type.startsWith("image/")) {
+        pendingBgImageData = "";
+        pendingBgFileName = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingBgImageData = reader.result;
+        pendingBgFileName = file.name;
+        if (msg) {
+          msg.className = "status-msg";
+          msg.textContent = "Bild ausgewählt: " + file.name + " (auf Hochladen klicken)";
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function addBackgroundItem() {
+      if (!isAdmin) return;
+      const nameInput = document.getElementById("homeBgTitleInput");
+      const descInput = document.getElementById("homeBgDescInput");
+      const fileInput = document.getElementById("homeBgFileInput");
+      const msg = document.getElementById("homeBgStatusMsg");
+
+      const name = nameInput.value.trim();
+      const desc = descInput.value.trim();
+
+      if (!name) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Bitte einen Namen für das Bild eingeben.";
+        return;
+      }
+      if (!pendingBgImageData) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Bitte zuerst ein Bild auswählen.";
+        return;
+      }
+
+      const newItem = {
+        id: "bg_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+        title: name,
+        desc: desc || "Keine Beschreibung hinterlegt.",
+        filename: pendingBgFileName || "bild.png",
+        dataUrl: pendingBgImageData
+      };
+
+      portalState.bgList.unshift(newItem);
+      const res = await persistPortalState();
+
+      nameInput.value = "";
+      descInput.value = "";
+      fileInput.value = "";
+      pendingBgImageData = "";
+      pendingBgFileName = "";
+
+      if (msg) {
+        if (res.ok) {
+          msg.className = "status-msg";
+          msg.textContent = res.cloud ? "Bild für alle hochgeladen." : "Bild lokal hochgeladen.";
+        } else {
+          msg.className = "status-msg status-err";
+          msg.textContent = "Online-Speichern fehlgeschlagen: " + (res.error || "Unbekannt");
+        }
+      }
+      renderBgRaster();
+    }
+
+    async function deleteBackground(id) {
+      if (!isAdmin) return;
+      portalState.bgList = portalState.bgList.filter((b) => b.id !== id);
+      await persistPortalState();
+      renderBgRaster();
+    }
+
+    function renderBgRaster() {
+      const grid = document.getElementById("bgRasterGrid");
+      const badge = document.getElementById("bgCountBadge");
+      const uploadBox = document.getElementById("bgAdminUploadBox");
+
+      if (uploadBox) uploadBox.style.display = isAdmin ? "block" : "none";
+      if (!grid) return;
+      if (badge) badge.textContent = `${portalState.bgList.length} ${portalState.bgList.length === 1 ? "Bild" : "Bilder"}`;
+
+      if (!portalState.bgList.length) {
+        grid.innerHTML = `<div class="raster-placeholder" style="grid-column:1/-1; background:var(--bg-card-2); border:1px dashed var(--border); border-radius:12px;">Noch keine Bilder vorhanden.</div>`;
+        return;
+      }
+
+      grid.innerHTML = portalState.bgList.map((item) => {
+        const dlName = item.filename || "bild.png";
+        return `
+          <div class="raster-card">
+            <div class="raster-img-wrap">
+              <img src="${item.dataUrl}" alt="${escapeHtml(item.title)}" />
+            </div>
+            <div class="raster-body">
+              <h3>🌄 ${escapeHtml(item.title)}</h3>
+              <p class="muted" style="white-space:pre-wrap;">${escapeHtml(item.desc || "")}</p>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:6px;">
+                <a class="btn btn-sm btn-primary" style="flex:1;" href="${item.dataUrl}" download="${escapeHtml(dlName)}">
+                  ⬇️ Download
+                </a>
+                ${isAdmin
+                  ? `<button type="button" class="btn btn-sm btn-danger" onclick="deleteBackground('${item.id}')">Löschen</button>`
+                  : ""
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function addBauwerk() {
+      if (!isAdmin) return;
+      const title = document.getElementById("bauwerkTitleInput").value.trim();
+      const desc = document.getElementById("bauwerkDescInput").value.trim();
+      const fileInput = document.getElementById("bauwerkFileInput");
+      const file = fileInput.files && fileInput.files[0];
+      const msg = document.getElementById("bauwerkStatusMsg");
+
+      if (!title) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Bitte einen Bauwerk-Namen eingeben.";
+        return;
+      }
+
+      const finishCreate = async (imgData) => {
+        portalState.bauwerke.unshift({
+          id: "bw_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          title,
+          desc: desc || "Keine Beschreibung hinterlegt.",
+          image: imgData || ""
+        });
+        const res = await persistPortalState();
+        document.getElementById("bauwerkTitleInput").value = "";
+        document.getElementById("bauwerkDescInput").value = "";
+        fileInput.value = "";
+        if (msg) {
+          if (res.ok) {
+            msg.className = "status-msg";
+            msg.textContent = res.cloud ? "Bauwerk für alle hinzugefügt." : "Bauwerk lokal hinzugefügt.";
+          } else {
+            msg.className = "status-msg status-err";
+            msg.textContent = "Online-Speichern fehlgeschlagen: " + (res.error || "Unbekannt");
+          }
+        }
+        renderBauwerke();
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => finishCreate(reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        finishCreate("");
+      }
+    }
+
+    async function deleteBauwerk(id) {
+      if (!isAdmin) return;
+      portalState.bauwerke = portalState.bauwerke.filter((b) => b.id !== id);
+      await persistPortalState();
+      renderBauwerke();
+    }
+
+    function renderBauwerke() {
+      const grid = document.getElementById("bauwerkeGrid");
+      const badge = document.getElementById("bauwerkeCountBadge");
+      const uploadBox = document.getElementById("bauwerkAdminUploadBox");
+
+      if (uploadBox) uploadBox.style.display = isAdmin ? "block" : "none";
+      if (!grid) return;
+      badge.textContent = `${portalState.bauwerke.length} ${portalState.bauwerke.length === 1 ? "Bauwerk" : "Bauwerke"}`;
+
+      if (!portalState.bauwerke.length) {
+        grid.innerHTML = `<div class="raster-placeholder" style="grid-column:1/-1; background:var(--bg-card-2); border:1px dashed var(--border); border-radius:12px;">Noch keine Bauwerke vorhanden.</div>`;
+        return;
+      }
+
+      grid.innerHTML = portalState.bauwerke.map((bw) => `
+        <div class="raster-card">
+          <div class="raster-img-wrap">
+            ${bw.image
+              ? `<img src="${bw.image}" alt="${escapeHtml(bw.title)}" />`
+              : `<div class="raster-placeholder">Kein Bild</div>`
+            }
+          </div>
+          <div class="raster-body">
+            <h3>🏗️ ${escapeHtml(bw.title)}</h3>
+            <p class="muted" style="white-space:pre-wrap;">${escapeHtml(bw.desc)}</p>
+            ${isAdmin ? `
+              <div style="margin-top:auto; padding-top:8px;">
+                <button type="button" class="btn btn-sm btn-danger" onclick="deleteBauwerk('${bw.id}')">Löschen</button>
+              </div>
+            ` : ""}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function bindEmojiSearchInput(inputId) {
+      const input = document.getElementById(inputId);
+      const popup = document.getElementById("emojiPopup_" + inputId);
+      if (!input || !popup) return;
+
+      const updatePopup = () => {
+        const q = input.value.trim().toLowerCase();
+        if (!q) {
+          popup.classList.remove("open");
+          popup.innerHTML = "";
+          return;
+        }
+        const matches = DISCORD_EMOJIS.filter((item) =>
+          item.e.includes(q) || item.k.toLowerCase().includes(q)
+        );
+        if (!matches.length) {
+          popup.innerHTML = `<div class="raster-placeholder" style="grid-column:1/-1;">Keine Treffer.</div>`;
+          popup.classList.add("open");
+          return;
+        }
+        popup.innerHTML = matches.map((m) => `
+          <button type="button" class="emoji-choice" data-emoji="${m.e}" title="${escapeHtml(m.k)}">
+            <span class="em">${m.e}</span>
+            <span>${escapeHtml(m.k.split(" ")[0])}</span>
+          </button>
+        `).join("");
+        popup.classList.add("open");
+      };
+
+      input.addEventListener("input", updatePopup);
+      input.addEventListener("focus", updatePopup);
+
+      popup.addEventListener("click", (e) => {
+        const choice = e.target.closest(".emoji-choice");
+        if (!choice) return;
+        input.value = choice.dataset.emoji;
+        popup.classList.remove("open");
+        popup.innerHTML = "";
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".field")) {
+        document.querySelectorAll(".emoji-picker-popup.open").forEach((p) => {
+          p.classList.remove("open");
+        });
+      }
+    });
+
+    function resolveEmoji(rawValue, fallbackText = "") {
+      const cleaned = (rawValue || "").trim();
+      if (cleaned) {
+        const exactMatch = DISCORD_EMOJIS.find((d) => d.e === cleaned);
+        if (exactMatch) return exactMatch.e;
+        const firstToken = cleaned.split(/\s+/)[0];
+        if (/[^\u0020-\u007E]/.test(firstToken)) return firstToken;
+        const kwMatch = DISCORD_EMOJIS.find((d) => d.k.toLowerCase().includes(cleaned.toLowerCase()));
+        if (kwMatch) return kwMatch.e;
+      }
+      const lowerText = (fallbackText || "").toLowerCase();
+      if (lowerText.includes("krone") || lowerText.includes("leitung")) return "👑";
+      if (lowerText.includes("polizei")) return "🚓";
+      if (lowerText.includes("feuer")) return "🚒";
+      if (lowerText.includes("rettung") || lowerText.includes("arzt")) return "🚑";
+      if (lowerText.includes("support")) return "🎧";
+      if (lowerText.includes("regel")) return "📜";
+      return "👥";
+    }
+
+    function renderRules() {
+      const btnContainer = document.getElementById("ruleButtonsContainer");
+      const viewBox = document.getElementById("ruleDisplayBox");
+      const editor = document.getElementById("ruleAdminEditor");
+
+      editor.style.display = isAdmin ? "block" : "none";
+
+      if (!portalState.rules.length) {
+        btnContainer.innerHTML = "";
+        viewBox.textContent = "Keine Regel-Buttons vorhanden.";
+        return;
+      }
+
+      if (!portalState.rules.some((r) => r.id === activeRuleId)) {
+        activeRuleId = portalState.rules[0].id;
+      }
+
+      btnContainer.innerHTML = portalState.rules.map((r) => `
+        <button type="button" class="tab-btn ${r.id === activeRuleId ? "active" : ""}" onclick="selectRule('${r.id}')">
+          ${escapeHtml(r.emoji)} ${escapeHtml(r.title)}
+        </button>
+      `).join("");
+
+      const current = portalState.rules.find((r) => r.id === activeRuleId) || portalState.rules[0];
+      viewBox.textContent = `${current.emoji} ${current.title}\n\n${current.body}`;
+    }
+
+    function selectRule(id) {
+      activeRuleId = id;
+      const current = portalState.rules.find((r) => r.id === id);
+      if (current && isAdmin) {
+        document.getElementById("ruleTitleInput").value = current.title;
+        document.getElementById("ruleEmojiInput").value = current.emoji;
+        document.getElementById("ruleBodyInput").value = current.body;
+      }
+      renderRules();
+    }
+
+    async function saveNewRule() {
+      if (!isAdmin) return;
+      const title = document.getElementById("ruleTitleInput").value.trim();
+      const rawEmoji = document.getElementById("ruleEmojiInput").value.trim();
+      const body = document.getElementById("ruleBodyInput").value.trim();
+      const msg = document.getElementById("ruleStatusMsg");
+
+      if (!title || !body) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Bitte Titel und Regeltext ausfüllen.";
+        return;
+      }
+
+      const newRule = {
+        id: "r_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        emoji: resolveEmoji(rawEmoji, title),
+        title,
+        body
+      };
+      portalState.rules.push(newRule);
+      activeRuleId = newRule.id;
+      await persistPortalState();
+      renderRules();
+      msg.className = "status-msg";
+      msg.textContent = "Regel-Button angelegt.";
+    }
+
+    async function updateSelectedRule() {
+      if (!isAdmin) return;
+      const current = portalState.rules.find((r) => r.id === activeRuleId);
+      const msg = document.getElementById("ruleStatusMsg");
+      if (!current) return;
+
+      const title = document.getElementById("ruleTitleInput").value.trim() || current.title;
+      const rawEmoji = document.getElementById("ruleEmojiInput").value.trim();
+      const body = document.getElementById("ruleBodyInput").value.trim() || current.body;
+
+      current.title = title;
+      current.emoji = resolveEmoji(rawEmoji || current.emoji, title);
+      current.body = body;
+
+      await persistPortalState();
+      renderRules();
+      msg.className = "status-msg";
+      msg.textContent = "Regel gespeichert.";
+    }
+
+    async function deleteSelectedRule() {
+      if (!isAdmin) return;
+      const msg = document.getElementById("ruleStatusMsg");
+      portalState.rules = portalState.rules.filter((r) => r.id !== activeRuleId);
+      activeRuleId = portalState.rules[0] ? portalState.rules[0].id : null;
+      await persistPortalState();
+      renderRules();
+      msg.className = "status-msg";
+      msg.textContent = "Regel gelöscht.";
+    }
+
+    function copyCurrentRule() {
+      const current = portalState.rules.find((r) => r.id === activeRuleId);
+      if (!current) return;
+      const text = `${current.emoji} **${current.title}**\n\n${current.body}`;
+      navigator.clipboard?.writeText(text).catch(() => {});
+    }
+
+    async function addTeamRole() {
+      if (!isAdmin) return;
+      const name = document.getElementById("newRoleName").value.trim();
+      const rawEmoji = document.getElementById("newRoleEmoji").value.trim();
+      const rawMembers = document.getElementById("newRoleMembers").value.trim();
+      const msg = document.getElementById("teamStatusMsg");
+
+      if (!name) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Bitte einen Rollen-Namen eingeben.";
+        return;
+      }
+
+      const members = rawMembers
+        ? rawMembers.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      portalState.team.push({
+        id: "role_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        name,
+        emoji: resolveEmoji(rawEmoji, name),
+        members
+      });
+
+      await persistPortalState();
+      document.getElementById("newRoleName").value = "";
+      document.getElementById("newRoleEmoji").value = "";
+      document.getElementById("newRoleMembers").value = "";
+      msg.className = "status-msg";
+      msg.textContent = "Rolle hinzugefügt.";
+      renderTeamlist();
+    }
+
+    async function addPersonToRole(roleId) {
+      if (!isAdmin) return;
+      const input = document.getElementById("addPerson_" + roleId);
+      if (!input) return;
+      const person = input.value.trim();
+      if (!person) return;
+
+      const role = portalState.team.find((r) => r.id === roleId);
+      if (!role) return;
+      role.members.push(person);
+      await persistPortalState();
+      input.value = "";
+      renderTeamlist();
+    }
+
+    async function removePersonFromRole(roleId, index) {
+      if (!isAdmin) return;
+      const role = portalState.team.find((r) => r.id === roleId);
+      if (!role) return;
+      role.members.splice(index, 1);
+      await persistPortalState();
+      renderTeamlist();
+    }
+
+    async function deleteTeamRole(roleId) {
+      if (!isAdmin) return;
+      portalState.team = portalState.team.filter((r) => r.id !== roleId);
+      await persistPortalState();
+      renderTeamlist();
+    }
+
+    function renderTeamlist() {
+      const lockedBox = document.getElementById("teamLockedBox");
+      const adminContent = document.getElementById("teamAdminContent");
+      const container = document.getElementById("teamRolesContainer");
+      const badge = document.getElementById("teamRoleCount");
+
+      badge.textContent = `${portalState.team.length} ${portalState.team.length === 1 ? "Rolle" : "Rollen"}`;
+
+      if (!isAdmin) {
+        lockedBox.style.display = "block";
+        adminContent.style.display = "none";
+        return;
+      }
+
+      lockedBox.style.display = "none";
+      adminContent.style.display = "block";
+
+      if (!portalState.team.length) {
+        container.innerHTML = `<div class="raster-placeholder" style="grid-column:1/-1; background:var(--bg-card); border:1px dashed var(--border); border-radius:12px;">Noch keine Rollen angelegt.</div>`;
+        return;
+      }
+
+      container.innerHTML = portalState.team.map((role) => `
+        <div class="role-box">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <h3>${escapeHtml(role.emoji)} ${escapeHtml(role.name)}</h3>
+            <button type="button" class="btn btn-sm btn-danger" onclick="deleteTeamRole('${role.id}')">Löschen</button>
+          </div>
+          <ul class="member-list">
+            ${role.members.length
+              ? role.members.map((m, idx) => `
+                <li class="member-item">
+                  <span>${escapeHtml(m)}</span>
+                  <button type="button" class="btn btn-sm btn-danger" onclick="removePersonFromRole('${role.id}', ${idx})">✕</button>
+                </li>
+              `).join("")
+              : `<li class="muted" style="font-size:0.84rem;">Keine Personen eingetragen.</li>`
+            }
+          </ul>
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            <input type="text" id="addPerson_${role.id}" placeholder="Person hinzufügen..." />
+            <button type="button" class="btn btn-sm" onclick="addPersonToRole('${role.id}')">+</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function verifyAdminPin() {
+      const pin = document.getElementById("adminPinInput").value;
+      const msg = document.getElementById("adminLoginMsg");
+      if (pin === ADMIN_PIN) {
+        pinVerifiedWaitingName = true;
+        document.getElementById("adminPinInput").value = "";
+        msg.textContent = "";
+        document.getElementById("adminNameMsg").textContent = "";
+        renderAdminState();
+        document.getElementById("adminNameInput").focus();
+      } else {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Falscher PIN.";
+      }
+    }
+
+    function completeAdminLogin() {
+      const nameInput = document.getElementById("adminNameInput");
+      const msg = document.getElementById("adminNameMsg");
+      const enteredName = nameInput.value.trim();
+
+      if (!enteredName) {
+        msg.className = "status-msg status-err";
+        msg.textContent = "Richtiger Name Pflicht – bitte gib deinen Namen ein.";
+        return;
+      }
+
+      isAdmin = true;
+      pinVerifiedWaitingName = false;
+      adminName = enteredName;
+      sessionStorage.setItem(STORAGE_KEYS.adminAuth, "1");
+      sessionStorage.setItem(STORAGE_KEYS.adminUser, adminName);
+      nameInput.value = "";
+      msg.textContent = "";
+
+      addLog(`🛡️ Admin-Login von „${adminName}“`);
+      renderAll();
+    }
+
+    function logoutAdmin() {
+      if (isAdmin && adminName) {
+        addLog(`🚪 Admin-Logout von „${adminName}“`);
+      }
+      isAdmin = false;
+      pinVerifiedWaitingName = false;
+      bannerEditorOpen = false;
+      sessionStorage.removeItem(STORAGE_KEYS.adminAuth);
+      renderAll();
+    }
+
+    async function clearLogs() {
+      if (!isAdmin) return;
+      portalState.logs = [];
+      await persistPortalState();
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const list = document.getElementById("adminLogsList");
+      if (!list) return;
+      if (!portalState.logs.length) {
+        list.innerHTML = `<li class="log-item"><span class="muted">Noch keine Logs vorhanden.</span></li>`;
+        return;
+      }
+      list.innerHTML = portalState.logs.map((entry) => `
+        <li class="log-item">
+          <span>${escapeHtml(entry.message)}</span>
+          <span class="log-time">${escapeHtml(entry.time)}</span>
+        </li>
+      `).join("");
+    }
+
+    function renderAdminState() {
+      const pinStep = document.getElementById("adminPinStep");
+      const nameStep = document.getElementById("adminNameStep");
+      const dashboard = document.getElementById("adminDashboard");
+      const homePbBtn = document.getElementById("homePbChangeBtn");
+      const label = document.getElementById("loggedInAdminLabel");
+
+      if (isAdmin) {
+        pinStep.style.display = "none";
+        nameStep.style.display = "none";
+        dashboard.style.display = "block";
+        if (label) label.textContent = `Eingeloggt als: ${adminName || "Admin"}`;
+        renderLogs();
+      } else if (pinVerifiedWaitingName) {
+        pinStep.style.display = "none";
+        nameStep.style.display = "block";
+        dashboard.style.display = "none";
+      } else {
+        pinStep.style.display = "block";
+        nameStep.style.display = "none";
+        dashboard.style.display = "none";
+      }
+
+      if (homePbBtn) homePbBtn.style.display = isAdmin ? "inline-flex" : "none";
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderAll() {
+      applyPb(portalState.pb);
+      applyActiveBackground();
+      renderAdminState();
+      renderHomeBanner();
+      renderBauwerke();
+      renderBgRaster();
+      renderRules();
+      renderTeamlist();
+    }
+
+    async function initPortal() {
+      const localSnap = loadLocalSnapshot();
+      if (localSnap) {
+        applyLoadedData(localSnap);
+      }
+
+      if (hasSupabaseConfig()) {
+        setSyncLabel("Community-Portal · Lädt Online-Daten...");
+        const remoteSnap = await fetchRemoteState();
+        if (remoteSnap) {
+          applyLoadedData(remoteSnap);
+          saveLocalSnapshot(portalState);
+          setSyncLabel("Community-Portal · Online synchronisiert");
+        } else {
+          setSyncLabel("Community-Portal · Online bereit");
+        }
+      } else {
+        setSyncLabel("Community-Portal · Nur lokal");
+      }
+
+      bindEmojiSearchInput("ruleEmojiInput");
+      bindEmojiSearchInput("newRoleEmoji");
+      addLog("🌐 Jemand ist auf den Server / die Seite gekommen", hasSupabaseConfig());
+      renderAll();
+    }
+
+    initPortal();
+  </script>
+</body>
+</html>
+```[cite: 14]
